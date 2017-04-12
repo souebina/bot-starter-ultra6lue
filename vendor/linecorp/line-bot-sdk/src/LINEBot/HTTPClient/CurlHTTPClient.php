@@ -35,7 +35,7 @@ class CurlHTTPClient implements HTTPClient
     /** @var array */
     private $authHeaders;
     /** @var array */
-    private $userAgentHeader = ['User-Agent: LINE-BotSDK-PHP/' . Meta::VERSION];
+    private $userAgentHeader;
 
     /**
      * CurlHTTPClient constructor.
@@ -46,6 +46,9 @@ class CurlHTTPClient implements HTTPClient
     {
         $this->authHeaders = [
             "Authorization: Bearer $channelToken",
+        ];
+        $this->userAgentHeader = [
+            'User-Agent: LINE-BotSDK-PHP/' . Meta::VERSION,
         ];
     }
 
@@ -95,8 +98,13 @@ class CurlHTTPClient implements HTTPClient
             CURLOPT_HEADER => true,
         ];
 
-        if ($method === 'POST' && !empty($reqBody)) {
-            $options[CURLOPT_POSTFIELDS] = json_encode($reqBody);
+        if ($method === 'POST') {
+            if (empty($reqBody)) {
+                // Rel: https://github.com/line/line-bot-sdk-php/issues/35
+                $options[CURLOPT_HTTPHEADER][] = 'Content-Length: 0';
+            } else {
+                $options[CURLOPT_POSTFIELDS] = json_encode($reqBody);
+            }
         }
 
         $curl->setoptArray($options);

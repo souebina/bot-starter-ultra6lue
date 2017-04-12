@@ -24,6 +24,7 @@ use LINE\LINEBot\MessageBuilder;
 use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use LINE\LINEBot\Response;
 use LINE\LINEBot\SignatureValidator;
+use ReflectionClass;
 
 /**
  * A client class of LINE Messaging API.
@@ -100,14 +101,31 @@ class LINEBot
      *
      * This method receives variable texts. It can send text(s) message as bulk.
      *
+     * Exact signature of this method is <code>replyText(string $replyToken, string $text, string[] $extraTexts)</code>.
+     *
+     * Means, this method can also receive multiple texts like so;
+     *
+     * <code>
+     * $bot->replyText('reply-text', 'text', 'extra text1', 'extra text2', ...)
+     * </code>
+     *
      * @param string $replyToken Identifier of destination.
      * @param string $text Text of message.
-     * @param string[] $extraTexts Extra text of message.
+     * @param string[]|null $extraTexts Extra text of message.
      * @return Response
      */
-    public function replyText($replyToken, $text, ...$extraTexts)
+    public function replyText($replyToken, $text, $extraTexts = null)
     {
-        $textMessageBuilder = new TextMessageBuilder($text, ...$extraTexts);
+        $extra = [];
+        if (!is_null($extraTexts)) {
+            $args = func_get_args();
+            $extra = array_slice($args, 2);
+        }
+
+        /** @var TextMessageBuilder $textMessageBuilder */
+        $ref = new ReflectionClass('LINE\LINEBot\MessageBuilder\TextMessageBuilder');
+        $textMessageBuilder = $ref->newInstanceArgs(array_merge([$text], $extra));
+
         return $this->replyMessage($replyToken, $textMessageBuilder);
     }
 
@@ -122,6 +140,21 @@ class LINEBot
     {
         return $this->httpClient->post($this->endpointBase . '/v2/bot/message/push', [
             'to' => $to,
+            'messages' => $messageBuilder->buildMessage(),
+        ]);
+    }
+
+    /**
+     * Sends arbitrary message to multi destinations.
+     *
+     * @param array $tos Identifiers of destination.
+     * @param MessageBuilder $messageBuilder Message builder to send.
+     * @return Response
+     */
+    public function multicast(array $tos, MessageBuilder $messageBuilder)
+    {
+        return $this->httpClient->post($this->endpointBase . '/v2/bot/message/multicast', [
+            'to' => $tos,
             'messages' => $messageBuilder->buildMessage(),
         ]);
     }
