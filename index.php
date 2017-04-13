@@ -67,4 +67,6 @@ function replyLocationMessage($bot, $replyToken, $title, $address, $lat, $lon) {
   }
 }
 
+# test
+
  ?>
