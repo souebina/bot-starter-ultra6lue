@@ -37,9 +37,17 @@ foreach ($events as $event) {
 #    ->add(new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114))
 #);
 
+# 1.テキストメッセージの送信
 # replyTextMessage($bot, $event->getReplyToken(), "TextMessage");
+
+# 2.画像の送信
 # replyImageMessage($bot, $event->getReplyToken(), "https://" . $_SERVER["HTTP_HOST"] . "/imgs/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/imgs/preview.jpg");
-replyLocationMessage($bot, $event->getReplyToken(), "LINE", "東京都渋谷区渋谷2-21-1 ヒカリエ27階", 35.659025, 139.703473);
+
+# 3.位置情報の送信
+# replyLocationMessage($bot, $event->getReplyToken(), "LINE", "東京都渋谷区渋谷2-21-1 ヒカリエ27階", 35.659025, 139.703473);
+
+# 4.スタンプの送信
+replyStickerMessage($bot, $event->getReplyToken(), 1, 1);
 
 }
 
@@ -67,6 +75,12 @@ function replyLocationMessage($bot, $replyToken, $title, $address, $lat, $lon) {
   }
 }
 
-# test
+# スタンプの送信には、StickerMessageBuilderを使います
+function replyStickerMessage($bot, $replyToken, $packageId, $stickerId) {
+  $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder($packageId, $stickerId));
+  if (!$response->isSucceeded()) {
+    error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
+}
 
  ?>
