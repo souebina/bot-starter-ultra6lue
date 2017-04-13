@@ -38,7 +38,7 @@ foreach ($events as $event) {
 #);
 
 #replyTextMessage($bot, $event->getReplyToken(), "TextMessage");
-replyImageMessage($bot, $event->getReplyToken(), "https://" . $_SERVER["HTTP_HOST"] . "/img/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/imgs/preview.jpg");
+replyImageMessage($bot, $event->getReplyToken(), "https://" . $_SERVER["HTTP_HOST"] . "/img/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/img/preview.jpg");
 
 }
 
