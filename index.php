@@ -37,11 +37,13 @@ foreach ($events as $event) {
 #    ->add(new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114))
 #);
 
-#replyTextMessage($bot, $event->getReplyToken(), "TextMessage");
-replyImageMessage($bot, $event->getReplyToken(), "https://" . $_SERVER["HTTP_HOST"] . "/imgs/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/imgs/preview.jpg");
+# replyTextMessage($bot, $event->getReplyToken(), "TextMessage");
+# replyImageMessage($bot, $event->getReplyToken(), "https://" . $_SERVER["HTTP_HOST"] . "/imgs/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/imgs/preview.jpg");
+replyLocationMessage($bot, $event->getReplyToken(), "LINE", "東京都渋谷区渋谷2-21-1 ヒカリエ27階", 35.659025, 139.703473);
 
 }
 
+# テキストメッセージの送信には、Bot->replyText関数が手軽ですが、他のメッセージと合わせて送ることも考慮しTextMessageBuilderを使って送信しましょう
 function replyTextMessage($bot, $replyToken, $text) {
   $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($text));
   if (!$response->isSucceeded()) {
@@ -49,8 +51,17 @@ function replyTextMessage($bot, $replyToken, $text) {
   }
 }
 
+# 画像の送信には、ImageMessageBuilderを使います
 function replyImageMessage($bot, $replyToken, $originalImageUrl, $previewImageUrl) {
   $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl, $previewImageUrl));
+  if (!$response->isSucceeded()) {
+    error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
+}
+
+# 位置情報の送信には、LocationMessageBuilderを使います
+function replyLocationMessage($bot, $replyToken, $title, $address, $lat, $lon) {
+  $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder($title, $address, $lat, $lon));
   if (!$response->isSucceeded()) {
     error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
   }
