@@ -56,4 +56,6 @@ function replyImageMessage($bot, $replyToken, $originalImageUrl, $previewImageUr
   }
 }
 
+# test
+
  ?>
