@@ -37,7 +37,8 @@ foreach ($events as $event) {
 #    ->add(new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114))
 #);
 
-replyTextMessage($bot, $event->getReplyToken(), "TextMessage");
+#replyTextMessage($bot, $event->getReplyToken(), "TextMessage");
+replyImageMessage($bot, $event->getReplyToken(), "https://" . $_SERVER["HTTP_HOST"] . "/imgs/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/imgs/preview.jpg");
 
 }
 
@@ -47,4 +48,12 @@ function replyTextMessage($bot, $replyToken, $text) {
     error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
   }
 }
+
+function replyImageMessage($bot, $replyToken, $originalImageUrl, $previewImageUrl) {
+  $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl, $previewImageUrl));
+  if (!$response->isSucceeded()) {
+    error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
+}
+
  ?>
