@@ -91,6 +91,8 @@ replyConfirmTemplate($bot,
     new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
       "非表示", "never")
     );
+                     
+}
 
 # 1.テキストメッセージの送信には、Bot->replyText関数が手軽ですが、他のメッセージと合わせて送ることも考慮しTextMessageBuilderを使って送信しましょう
 function replyTextMessage($bot, $replyToken, $text) {
@@ -167,5 +169,4 @@ function replyConfirmTemplate($bot, $replyToken, $alternativeText, $text, ...$ac
     error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
   }
 }
-
  ?>
