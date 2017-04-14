@@ -133,5 +133,5 @@ function replyButtonsTemplate($bot, $replyToken, $alternativeText, $imageUrl, $t
     error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
   }
 }
-
+# 
  ?>
