@@ -57,7 +57,7 @@ foreach ($events as $event) {
 #    new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 1)
 #  );
 
-# 6. ボタンテンプレートの送信
+# 6.ボタンテンプレートの送信
 replyButtonsTemplate($bot,
     $event->getReplyToken(),
     "お天気お知らせ - 今日は天気予報は晴れです",
@@ -74,7 +74,7 @@ replyButtonsTemplate($bot,
 
 }
 
-# テキストメッセージの送信には、Bot->replyText関数が手軽ですが、他のメッセージと合わせて送ることも考慮しTextMessageBuilderを使って送信しましょう
+# 1.テキストメッセージの送信には、Bot->replyText関数が手軽ですが、他のメッセージと合わせて送ることも考慮しTextMessageBuilderを使って送信しましょう
 function replyTextMessage($bot, $replyToken, $text) {
   $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($text));
   if (!$response->isSucceeded()) {
@@ -82,7 +82,7 @@ function replyTextMessage($bot, $replyToken, $text) {
   }
 }
 
-# 画像の送信には、ImageMessageBuilderを使います
+# 2.画像の送信には、ImageMessageBuilderを使います
 function replyImageMessage($bot, $replyToken, $originalImageUrl, $previewImageUrl) {
   $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl, $previewImageUrl));
   if (!$response->isSucceeded()) {
@@ -90,7 +90,7 @@ function replyImageMessage($bot, $replyToken, $originalImageUrl, $previewImageUr
   }
 }
 
-# 位置情報の送信には、LocationMessageBuilderを使います
+# 3.位置情報の送信には、LocationMessageBuilderを使います
 function replyLocationMessage($bot, $replyToken, $title, $address, $lat, $lon) {
   $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder($title, $address, $lat, $lon));
   if (!$response->isSucceeded()) {
@@ -98,7 +98,7 @@ function replyLocationMessage($bot, $replyToken, $title, $address, $lat, $lon) {
   }
 }
 
-# スタンプの送信には、StickerMessageBuilderを使います
+# 4.スタンプの送信には、StickerMessageBuilderを使います
 function replyStickerMessage($bot, $replyToken, $packageId, $stickerId) {
   $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder($packageId, $stickerId));
   if (!$response->isSucceeded()) {
@@ -106,7 +106,7 @@ function replyStickerMessage($bot, $replyToken, $packageId, $stickerId) {
   }
 }
 
-# MultiMessageBuilderをreplyMessage関数に渡すことで、最大5個のメッセージを組み合わせて送信することができます
+# 5.MultiMessageBuilderをreplyMessage関数に渡すことで、最大5個のメッセージを組み合わせて送信することができます
 function replyMultiMessage($bot, $replyToken, ...$msgs) {
   $builder = new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder();
   foreach($msgs as $value) {
@@ -118,7 +118,7 @@ function replyMultiMessage($bot, $replyToken, ...$msgs) {
   }
 }
 
-# Buttonsテンプレートは、画像、タイトル、テキスト、アクションの配列で構成されています。このうち画像とタイトルは省略可能です。省略した時は引数にnullを指定します
+# 6.Buttonsテンプレートは、画像、タイトル、テキスト、アクションの配列で構成されています。このうち画像とタイトルは省略可能です。省略した時は引数にnullを指定します
 function replyButtonsTemplate($bot, $replyToken, $alternativeText, $imageUrl, $title, $text, ...$actions) {
   $actionArray = array();
   foreach($actions as $value) {
