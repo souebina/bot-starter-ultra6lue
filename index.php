@@ -47,7 +47,30 @@ foreach ($events as $event) {
 # replyLocationMessage($bot, $event->getReplyToken(), "LINE", "東京都渋谷区渋谷2-21-1 ヒカリエ27階", 35.659025, 139.703473);
 
 # 4.スタンプの送信
-replyStickerMessage($bot, $event->getReplyToken(), 1, 1);
+# replyStickerMessage($bot, $event->getReplyToken(), 1, 1);
+
+# 5.複数メッセージの送信
+# replyMultiMessage($bot, $event->getReplyToken(),
+#    new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("TextMessage"),
+#    new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder("https://" . $_SERVER["HTTP_HOST"] . "/imgs/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/imgs/preview.jpg"),
+#    new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder("LINE", "東京都渋谷区渋谷2-21-1 ヒカリエ27階", 35.659025, 139.703473),
+#    new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 1)
+#  );
+
+# 6. ボタンテンプレートの送信
+replyButtonsTemplate($bot,
+    $event->getReplyToken(),
+    "お天気お知らせ - 今日は天気予報は晴れです",
+    "https://" . $_SERVER["HTTP_HOST"] . "/imgs/template.jpg",
+    "お天気お知らせ",
+    "今日は天気予報は晴れです",
+    new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+      "明日の天気", "tomorrow"),
+    new LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder (
+      "週末の天気", "weekend"),
+    new LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder (
+      "Webで見る", "http://google.jp")
+    );
 
 }
 
@@ -78,6 +101,34 @@ function replyLocationMessage($bot, $replyToken, $title, $address, $lat, $lon) {
 # スタンプの送信には、StickerMessageBuilderを使います
 function replyStickerMessage($bot, $replyToken, $packageId, $stickerId) {
   $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder($packageId, $stickerId));
+  if (!$response->isSucceeded()) {
+    error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
+}
+
+# MultiMessageBuilderをreplyMessage関数に渡すことで、最大5個のメッセージを組み合わせて送信することができます
+function replyMultiMessage($bot, $replyToken, ...$msgs) {
+  $builder = new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder();
+  foreach($msgs as $value) {
+    $builder->add($value);
+  }
+  $response = $bot->replyMessage($replyToken, $builder);
+  if (!$response->isSucceeded()) {
+    error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
+}
+
+# Buttonsテンプレートは、画像、タイトル、テキスト、アクションの配列で構成されています。このうち画像とタイトルは省略可能です。省略した時は引数にnullを指定します
+function replyButtonsTemplate($bot, $replyToken, $alternativeText, $imageUrl, $title, $text, ...$actions) {
+  $actionArray = array();
+  foreach($actions as $value) {
+    array_push($actionArray, $value);
+  }
+  $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
+    $alternativeText,
+    new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder ($title, $text, $imageUrl, $actionArray)
+  );
+  $response = $bot->replyMessage($replyToken, $builder);
   if (!$response->isSucceeded()) {
     error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
   }
