@@ -19,6 +19,12 @@ try {
 }
 
 foreach ($events as $event) {
+
+  if ($event instanceof \LINE\LINEBot\Event\PostbackEvent) {
+  replyTextMessage($bot, $event->getReplyToken(), "Postback受信「" . $event->getPostbackData() . "」");
+  continue;
+}
+
   if (!($event instanceof \LINE\LINEBot\Event\MessageEvent)) {
     error_log('Non message event has come');
     continue;
@@ -58,20 +64,34 @@ foreach ($events as $event) {
 #  );
 
 # 6.ボタンテンプレートの送信
-replyButtonsTemplate($bot,
-    $event->getReplyToken(),
-    "お天気お知らせ - 今日は天気予報は晴れです",
-    "https://" . $_SERVER["HTTP_HOST"] . "/imgs/template.jpg",
-    "お天気お知らせ",
-    "今日は天気予報は晴れです",
-    new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
-      "明日の天気", "tomorrow"),
-    new LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder (
-      "週末の天気", "weekend"),
-    new LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder (
-      "Webで見る", "http://google.jp")
-    );
+# replyButtonsTemplate($bot,
+#    $event->getReplyToken(),
+#    "お天気お知らせ - 今日は天気予報は晴れです",
+#    "https://" . $_SERVER["HTTP_HOST"] . "/imgs/template.jpg",
+#    "お天気お知らせ",
+#    "今日は天気予報は晴れです",
+#    new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+#      "明日の天気", "tomorrow"),
+#    new LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder (
+#      "週末の天気", "weekend"),
+#    new LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder (
+#      "Webで見る", "http://google.jp")
+#    );
+#
 
+# 7. Comfirmテンプレートの送信
+replyConfirmTemplate($bot,
+    $event->getReplyToken(),
+    "Webで詳しく見ますか？",
+    "Webで詳しく見ますか？",
+    new LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder (
+      "見る", "http://google.jp"),
+    new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+      "見ない", "ignore"),
+    new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+      "非表示", "never")
+    );
+                     
 }
 
 # 1.テキストメッセージの送信には、Bot->replyText関数が手軽ですが、他のメッセージと合わせて送ることも考慮しTextMessageBuilderを使って送信しましょう
@@ -133,5 +153,20 @@ function replyButtonsTemplate($bot, $replyToken, $alternativeText, $imageUrl, $t
     error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
   }
 }
-# 
+
+# 7.ComfirmテンプレートはYES／NOやOK／キャンセルなどのシンプルなテキスト＋ボタンタイプのダイアログを出すテンプレートとなっています
+function replyConfirmTemplate($bot, $replyToken, $alternativeText, $text, ...$actions) {
+  $actionArray = array();
+  foreach($actions as $value) {
+    array_push($actionArray, $value);
+  }
+  $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
+    $alternativeText,
+    new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder ($text, $actionArray)
+  );
+  $response = $bot->replyMessage($replyToken, $builder);
+  if (!$response->isSucceeded()) {
+    error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
+}
  ?>
