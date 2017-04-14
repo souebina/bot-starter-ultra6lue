@@ -71,7 +71,6 @@ replyButtonsTemplate($bot,
     new LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder (
       "Webで見る", "http://google.jp")
     );
-
 }
 
 # テキストメッセージの送信には、Bot->replyText関数が手軽ですが、他のメッセージと合わせて送ることも考慮しTextMessageBuilderを使って送信しましょう
@@ -133,5 +132,4 @@ function replyButtonsTemplate($bot, $replyToken, $alternativeText, $imageUrl, $t
     error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
   }
 }
-
  ?>
