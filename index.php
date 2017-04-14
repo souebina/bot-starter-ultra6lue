@@ -78,6 +78,7 @@ foreach ($events as $event) {
 #      "Webで見る", "http://google.jp")
 #    );
 #}
+#
 
 # 7. Comfirmテンプレートの送信
 replyConfirmTemplate($bot,
